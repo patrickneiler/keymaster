@@ -1,0 +1,83 @@
+<div cdkDropListGroup class="drag-drop">
+  <div class="column">
+    <h2><span *ngIf="from">{{from.title}} </span></h2>
+    <mat-card *ngIf="from else loading">
+      <mat-list class="list from-list" [cdkDropListEnterPredicate]="noReturnPredicate()" cdkDropList
+        [cdkDropListData]="from.items">
+
+        <mat-list-item class="list-item user" *ngFor="let item of from.items" [cdkDragData]="item.data" cdkDrag>
+          <img matListAvatar [src]="item.avatar" alt="...">
+          <h3 matLine> {{item.label}} </h3>
+          <mat-icon>drag_handle</mat-icon>
+          <div class="drag-placeholder" *cdkDragPlaceholder></div>
+          <div *cdkDragPreview>
+            <img matListAvatar [src]="item.avatar" alt="...">
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+  </div>
+
+  <div class="column">
+    <!-- HEADING ATOM -->
+    <h2><span *ngIf="to">{{to.title}} </span></h2>
+    <!-- ------------ -->
+    <div *ngIf="to else loading">
+      <!-- GROUP ORGANISM -->
+      <div *ngFor="let item of to.items">
+        <mat-accordion>
+          <mat-expansion-panel #panel cdkDropList (cdkDropListDropped)="addItemToList($event, item.data.id)"
+            [cdkDropListData]="item.items" (cdkDropListEntered)="panel.open()" (cdkDropListExited)="panel.close()">
+            <mat-expansion-panel-header collapsedHeight="56px" expandedHeight="56px">
+              <!-- HEADING ATOM -->
+              <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              <mat-panel-title>
+                {{item.label}}
+              </mat-panel-title>
+              <!-- ------------ -->
+              <div class="group-summary">
+                <mat-list class="list">
+                  <!-- USER MOLECULE -->
+                  <mat-list-item class="list-item" *ngFor="let subitem of item.items" [cdkDragData]="subitem" cdkDrag>
+                    <!-- AVATAR ATOM -->
+                    <img matListAvatar [src]="subitem.avatar" alt="...">
+                    <!-- ------------ -->
+                  </mat-list-item>
+                  <!-- ------------ -->
+                </mat-list>
+              </div>
+            </mat-expansion-panel-header>
+            <mat-list cdkDropList [cdkDropListData]="item.items" class="list group-list"
+              (cdkDropListDropped)="addItemToList($event, item.data.id)">
+              <mat-list-item *ngIf="!item.items.length">
+                Looks like this list is empty.
+              </mat-list-item>
+              <mat-list-item class="list-item" *ngFor="let subitem of item.items">
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+                <!-- USER MOLECULE -->
+                <!-- AVATAR ATOM -->
+                <img matListAvatar [src]="subitem.avatar" alt="...">
+                <!-- ------------ -->
+                <!-- HEADING ATOM -->
+                <h3 matLine> {{subitem.label}} </h3>
+                <!-- ------------ -->
+                <mat-icon matBadge="15" matBadgeColor="accent">vpn_key</mat-icon>
+                <button (click)="removeItemFromList(item.data.id, subitem.data.id)" mat-icon-button>
+                  <mat-icon>remove_circle</mat-icon>
+                </button>
+              </mat-list-item>
+            </mat-list>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+      </div>
+      <!-- ------------ -->
+    </div>
+
+  </div>
+</div>
+
+
+<ng-template #loading>
+  <hexatomic-progress-spinner></hexatomic-progress-spinner>
+</ng-template>
